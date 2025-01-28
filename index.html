@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rastgele Resim Gösterici</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    #background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  </style>
+</head>
+<body>
+  <div id="background"></div>
+  <script>
+    // Resimleri dinamik olarak backend'den al
+    async function fetchImages() {
+      try {
+        const response = await fetch('getImages.php');
+        const images = await response.json();
+        return images;
+      } catch (error) {
+        console.error('Resim listesi alınamadı:', error);
+        return [];
+      }
+    }
+
+    // Rastgele bir resmi seçip tam ekran göster
+    function showRandomImage(images) {
+      const randomImage = images[Math.floor(Math.random() * images.length)];
+      document.getElementById('background').style.backgroundImage = `url('./img/${randomImage}')`;
+    }
+
+    // Resimleri yükle ve her 10 saniyede bir güncelle
+    (async function() {
+      const images = await fetchImages();
+      if (images.length > 0) {
+        showRandomImage(images);
+        setInterval(() => showRandomImage(images), 10000);
+      } else {
+        console.error('Hiç resim bulunamadı!');
+      }
+    })();
+  </script>
+</body>
+</html>
